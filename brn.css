@@ -1,0 +1,550 @@
+/* ==========================================================================
+   Sev Torreon — Game Dev Portfolio
+   Design language: HUD panels floating over the castle parallax skyline.
+   ========================================================================== */
+
+@import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700;800&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;600&display=swap');
+
+:root{
+  --ink:        #0d1220;
+  --panel:      rgba(15, 21, 38, 0.72);
+  --panel-soft: rgba(20, 27, 46, 0.55);
+  --hairline:   rgba(212, 175, 55, 0.35);
+  --gold:       #d4af37;
+  --gold-soft:  #e8cd6e;
+  --ember:      #c1502e;
+  --ember-soft: #e07249;
+  --parchment:  #f1ede4;
+  --parchment-dim: #b9c0d1;
+
+  --display: 'Cinzel', serif;
+  --body:    'Inter', -apple-system, sans-serif;
+  --mono:    'JetBrains Mono', monospace;
+}
+
+*{ box-sizing: border-box; }
+
+html{ scroll-behavior: smooth; }
+
+body{
+  margin: 0;
+  min-height: 100vh;
+  background: var(--ink);
+  color: var(--parchment);
+  font-family: var(--body);
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+}
+
+@media (prefers-reduced-motion: reduce){
+  html{ scroll-behavior: auto; }
+  *{ animation-duration: 0.01ms !important; animation-iteration-count: 1 !important; transition-duration: 0.01ms !important; }
+}
+
+/* -------------------------------------------------------------------------
+   Parallax backdrop (untouched logic — CSS only, keeps it full-bleed & behind)
+   ------------------------------------------------------------------------- */
+#pixiCanvas{
+  position: fixed;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 0;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+/* Vignette so text panels always have enough contrast against the scene,
+   however bright a given part of the parallax gets. */
+#pixiCanvas::after{
+  content: "";
+  position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(ellipse at center, rgba(13,18,32,0) 35%, rgba(13,18,32,0.55) 100%),
+    linear-gradient(to bottom, rgba(13,18,32,0.35) 0%, rgba(13,18,32,0) 22%, rgba(13,18,32,0) 78%, rgba(13,18,32,0.65) 100%);
+  pointer-events: none;
+}
+
+/* Every real content block sits above the canvas */
+.navbar, .footer, .main, .hero, .page-content, .blog-cards-container,
+.header-links, .row, .container-con{
+  position: relative;
+  z-index: 1;
+}
+
+a{ color: inherit; text-decoration: none; }
+
+img{ max-width: 100%; display: block; }
+
+/* -------------------------------------------------------------------------
+   Nav — glass HUD bar
+   ------------------------------------------------------------------------- */
+.navbar{
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1.5rem;
+  padding: 0.9rem 2.2rem;
+  background: var(--panel);
+  backdrop-filter: blur(10px);
+  border-bottom: 1px solid var(--hairline);
+  position: sticky;
+  top: 0;
+  z-index: 20;
+}
+
+.navbar .logo img{
+  height: 40px;
+  width: 40px;
+  border-radius: 8px;
+  border: 1px solid var(--hairline);
+  object-fit: cover;
+}
+
+.profile-section{
+  display: flex;
+  gap: 0.4rem;
+  flex-wrap: wrap;
+}
+
+.profile-section a{
+  font-family: var(--mono);
+  font-size: 0.72rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--parchment-dim);
+  padding: 0.55rem 0.9rem;
+  border-radius: 6px;
+  border: 1px solid transparent;
+  transition: color 0.2s ease, border-color 0.2s ease, background 0.2s ease;
+}
+
+.profile-section a:hover,
+.profile-section a.active{
+  color: var(--gold-soft);
+  border-color: var(--hairline);
+  background: rgba(212, 175, 55, 0.08);
+}
+
+/* -------------------------------------------------------------------------
+   Hero (home page)
+   ------------------------------------------------------------------------- */
+.hero{
+  min-height: 78vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 4rem 1.5rem 3rem;
+}
+
+.hero-eyebrow{
+  font-family: var(--mono);
+  font-size: 0.78rem;
+  letter-spacing: 0.3em;
+  text-transform: uppercase;
+  color: var(--gold-soft);
+  margin-bottom: 1.1rem;
+}
+
+.hero-eyebrow::before{ content: "◆ "; }
+
+.hero-title{
+  font-family: var(--display);
+  font-weight: 800;
+  font-size: clamp(2.6rem, 7vw, 5.2rem);
+  letter-spacing: 0.02em;
+  margin: 0 0 1rem;
+  color: var(--parchment);
+  text-shadow: 0 2px 24px rgba(0,0,0,0.55);
+}
+
+.hero-subtitle{
+  max-width: 46ch;
+  font-size: 1.05rem;
+  color: var(--parchment-dim);
+  margin: 0 auto 2.2rem;
+}
+
+.hero-actions{
+  display: flex;
+  gap: 1rem;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+.btn{
+  font-family: var(--mono);
+  font-size: 0.78rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  padding: 0.85rem 1.6rem;
+  border-radius: 8px;
+  border: 1px solid var(--hairline);
+  cursor: pointer;
+  transition: transform 0.15s ease, box-shadow 0.15s ease, background 0.15s ease;
+  display: inline-block;
+}
+
+.btn-primary{
+  background: linear-gradient(135deg, var(--ember), var(--ember-soft));
+  color: var(--parchment);
+  border-color: transparent;
+}
+
+.btn-primary:hover{ transform: translateY(-2px); box-shadow: 0 8px 24px rgba(193, 80, 46, 0.35); }
+
+.btn-ghost{
+  background: var(--panel-soft);
+  color: var(--gold-soft);
+}
+
+.btn-ghost:hover{ transform: translateY(-2px); background: rgba(212,175,55,0.1); }
+
+/* Status ticker under hero */
+.hero-status{
+  margin-top: 2.4rem;
+  font-family: var(--mono);
+  font-size: 0.75rem;
+  color: var(--parchment-dim);
+  letter-spacing: 0.05em;
+  padding: 0.6rem 1.1rem;
+  border: 1px solid var(--hairline);
+  border-radius: 999px;
+  background: var(--panel-soft);
+}
+
+.hero-status .dot{
+  display: inline-block;
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: var(--gold);
+  margin-right: 0.5rem;
+  box-shadow: 0 0 8px var(--gold);
+}
+
+/* -------------------------------------------------------------------------
+   Generic content sections
+   ------------------------------------------------------------------------- */
+.page-content{
+  max-width: 1080px;
+  margin: 0 auto;
+  padding: 3.5rem 1.5rem 5rem;
+}
+
+.section-title, .main h1, .header-links h2{
+  font-family: var(--display);
+  font-size: clamp(1.8rem, 4vw, 2.6rem);
+  color: var(--parchment);
+  text-align: center;
+  margin-bottom: 0.4rem;
+}
+
+.section-title::after, .header-links h2::after{
+  content: "";
+  display: block;
+  width: 64px;
+  height: 2px;
+  background: var(--gold);
+  margin: 1rem auto 0;
+}
+
+.section-sub{
+  text-align: center;
+  color: var(--parchment-dim);
+  max-width: 52ch;
+  margin: 0 auto 2.6rem;
+}
+
+.main{
+  padding: 3rem 1.5rem 0.5rem;
+  text-align: center;
+}
+
+.main h1{ margin: 0; }
+
+/* -------------------------------------------------------------------------
+   Home — featured projects strip
+   ------------------------------------------------------------------------- */
+.featured-strip{
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 1.4rem;
+  max-width: 1080px;
+  margin: 0 auto;
+  padding: 0 1.5rem 4rem;
+}
+
+.featured-card{
+  background: var(--panel);
+  border: 1px solid var(--hairline);
+  border-radius: 14px;
+  overflow: hidden;
+  backdrop-filter: blur(6px);
+  transition: transform 0.2s ease, border-color 0.2s ease;
+}
+
+.featured-card:hover{ transform: translateY(-4px); border-color: var(--gold); }
+
+.featured-card img{ width: 100%; height: 150px; object-fit: cover; }
+
+.featured-card-body{ padding: 1rem 1.1rem 1.3rem; }
+
+.featured-card h3{
+  font-family: var(--display);
+  font-size: 1.05rem;
+  margin: 0 0 0.3rem;
+  color: var(--gold-soft);
+}
+
+.featured-card p{ margin: 0; font-size: 0.88rem; color: var(--parchment-dim); }
+
+/* -------------------------------------------------------------------------
+   Projects / Quest Log grid  (Portfolio page)
+   ------------------------------------------------------------------------- */
+.quest-grid{
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 1.8rem;
+}
+
+.quest-card{
+  position: relative;
+  background: var(--panel);
+  border: 1px solid var(--hairline);
+  border-radius: 16px;
+  overflow: hidden;
+  backdrop-filter: blur(6px);
+  transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
+}
+
+.quest-card:hover{
+  transform: translateY(-5px);
+  border-color: var(--gold);
+  box-shadow: 0 14px 34px rgba(0,0,0,0.4);
+}
+
+.quest-thumb{
+  width: 100%;
+  height: 190px;
+  object-fit: cover;
+  border-bottom: 1px solid var(--hairline);
+}
+
+.quest-status{
+  position: absolute;
+  top: 0.8rem;
+  right: 0.8rem;
+  font-family: var(--mono);
+  font-size: 0.62rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  padding: 0.3rem 0.6rem;
+  border-radius: 999px;
+  background: rgba(13, 18, 32, 0.85);
+  border: 1px solid var(--hairline);
+  color: var(--gold-soft);
+}
+
+.quest-body{ padding: 1.3rem 1.4rem 1.5rem; }
+
+.quest-body h3{
+  font-family: var(--display);
+  font-size: 1.15rem;
+  margin: 0 0 0.6rem;
+  color: var(--parchment);
+  line-height: 1.35;
+}
+
+.quest-body p{
+  font-size: 0.9rem;
+  color: var(--parchment-dim);
+  margin: 0 0 1rem;
+}
+
+.tag-row{
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+}
+
+.tag{
+  font-family: var(--mono);
+  font-size: 0.66rem;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: var(--gold-soft);
+  border: 1px solid var(--hairline);
+  border-radius: 6px;
+  padding: 0.28rem 0.55rem;
+  background: rgba(212, 175, 55, 0.06);
+}
+
+/* Placeholder / coming soon card */
+.quest-card.placeholder{
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 260px;
+  border-style: dashed;
+  text-align: center;
+  padding: 2rem;
+}
+
+.quest-card.placeholder p{
+  font-family: var(--mono);
+  font-size: 0.8rem;
+  color: var(--parchment-dim);
+  letter-spacing: 0.04em;
+}
+
+/* -------------------------------------------------------------------------
+   About page
+   ------------------------------------------------------------------------- */
+.about-card{
+  display: grid;
+  grid-template-columns: 200px 1fr;
+  gap: 2rem;
+  background: var(--panel);
+  border: 1px solid var(--hairline);
+  border-radius: 16px;
+  padding: 2rem;
+  backdrop-filter: blur(6px);
+  margin-bottom: 2.6rem;
+}
+
+.about-card img{
+  width: 100%;
+  aspect-ratio: 1;
+  object-fit: cover;
+  border-radius: 12px;
+  border: 1px solid var(--hairline);
+}
+
+.about-card h1{
+  font-family: var(--display);
+  font-size: 1.8rem;
+  margin: 0 0 0.3rem;
+}
+
+.about-card h2{
+  font-family: var(--mono);
+  font-size: 0.85rem;
+  color: var(--gold-soft);
+  font-weight: 400;
+  letter-spacing: 0.04em;
+  margin: 0 0 1rem;
+  text-transform: none;
+}
+
+.stat-line{
+  font-family: var(--mono);
+  font-size: 0.82rem;
+  color: var(--parchment-dim);
+  margin: 0.2rem 0;
+}
+
+.stat-line b{ color: var(--parchment); font-weight: 600; }
+
+.about-card p.read-more a{
+  display: inline-block;
+  margin-top: 0.8rem;
+  font-family: var(--mono);
+  font-size: 0.78rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--gold-soft);
+  border-bottom: 1px solid var(--hairline);
+  padding-bottom: 2px;
+}
+
+/* Skill meters, restyled as HUD stat bars */
+.skill{ margin-bottom: 1.1rem; }
+
+.skill p{
+  font-family: var(--mono);
+  font-size: 0.78rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--parchment-dim);
+  margin: 0 0 0.4rem;
+}
+
+.meter{
+  height: 8px;
+  border-radius: 999px;
+  background: rgba(255,255,255,0.08);
+  border: 1px solid var(--hairline);
+  overflow: hidden;
+}
+
+.meter span{
+  display: block;
+  height: 100%;
+  background: linear-gradient(90deg, var(--ember), var(--gold));
+  border-radius: 999px;
+}
+
+/* -------------------------------------------------------------------------
+   Contacts page
+   ------------------------------------------------------------------------- */
+.container-con{
+  max-width: 720px;
+  margin: 0 auto;
+  padding: 3.5rem 1.5rem 5rem;
+  text-align: center;
+}
+
+.socials-grid{
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: 1rem;
+  margin: 1.6rem 0 2.4rem;
+}
+
+.link{
+  display: block;
+  font-family: var(--mono);
+  font-size: 0.8rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--parchment);
+  background: var(--panel);
+  border: 1px solid var(--hairline);
+  border-radius: 10px;
+  padding: 1rem 0.8rem;
+  transition: transform 0.15s ease, border-color 0.15s ease, color 0.15s ease;
+}
+
+.link:hover{
+  transform: translateY(-3px);
+  border-color: var(--gold);
+  color: var(--gold-soft);
+}
+
+/* -------------------------------------------------------------------------
+   Footer
+   ------------------------------------------------------------------------- */
+.footer{
+  text-align: center;
+  font-family: var(--mono);
+  font-size: 0.72rem;
+  letter-spacing: 0.06em;
+  color: var(--parchment-dim);
+  padding: 1.6rem 1rem 2.2rem;
+  border-top: 1px solid var(--hairline);
+  background: var(--panel-soft);
+}
+
+/* -------------------------------------------------------------------------
+   Responsive
+   ------------------------------------------------------------------------- */
+@media (max-width: 640px){
+  .navbar{ flex-direction: column; gap: 0.8rem; padding: 1rem 1.2rem; }
+  .profile-section{ justify-content: center; }
+  .about-card{ grid-template-columns: 1fr; text-align: center; }
+  .about-card img{ width: 140px; margin: 0 auto; }
+}
